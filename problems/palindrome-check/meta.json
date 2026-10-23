@@ -1,0 +1,7 @@
+{
+  "title": "Palindrome Check",
+  "difficulty": "Easy",
+  "tags": ["strings"],
+  "order": 5,
+  "timeLimitMs": 2000
+}
