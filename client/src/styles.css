@@ -1,0 +1,162 @@
+:root {
+  --bg: #f7f7f9;
+  --surface: #ffffff;
+  --text: #1d1d24;
+  --muted: #6b6b78;
+  --border: #e2e2e8;
+  --accent: #6c4cf5;
+}
+
+.dark {
+  --bg: #121218;
+  --surface: #1c1c25;
+  --text: #ececf1;
+  --muted: #9a9aab;
+  --border: #2d2d3a;
+  --accent: #9b85ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 24px;
+  background: var(--surface);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar a {
+  color: var(--muted);
+}
+
+.navbar a.active {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text) !important;
+}
+
+.brand span {
+  color: var(--accent);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+input,
+select {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.error {
+  color: #d33;
+}
+
+.problem-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 24px;
+}
+
+.statement,
+.workspace {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.statement pre {
+  background: var(--bg);
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.verdict {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.verdict pre {
+  white-space: pre-wrap;
+  font-size: 13px;
+}

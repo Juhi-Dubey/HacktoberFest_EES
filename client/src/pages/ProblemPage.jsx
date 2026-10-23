@@ -1,0 +1,135 @@
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { marked } from 'marked';
+import { api } from '../api.js';
+import { judge } from '../judge/runner.js';
+import { VERDICT_LABELS } from '../judge/verdict.js';
+import { LANGUAGES } from '../languages.js';
+import { getUsername } from '../username.js';
+import CodeEditor from '../components/CodeEditor.jsx';
+
+export default function ProblemPage() {
+  const { slug } = useParams();
+  const [problem, setProblem] = useState(null);
+  const [language, setLanguage] = useState(LANGUAGES[0]);
+  const [code, setCode] = useState(LANGUAGES[0].template);
+  const [status, setStatus] = useState('');
+  const [result, setResult] = useState(null);
+  const [submissions, setSubmissions] = useState([]);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    setProblem(null);
+    setResult(null);
+    setCode(language.template);
+    api.problem(slug).then(setProblem);
+    loadSubmissions();
+  }, [slug]);
+
+  function loadSubmissions() {
+    const username = getUsername();
+    if (!username) return setSubmissions([]);
+    api.submissions(slug, username).then(setSubmissions);
+  }
+
+  async function submit() {
+    const username = getUsername();
+    if (!username) {
+      alert('Enter your team name in the top bar first.');
+      return;
+    }
+    setBusy(true);
+    setResult(null);
+    try {
+      const res = await judge(code, problem, setStatus);
+      setResult(res);
+      await api.submit({ username, slug, language: language.id, code, ...res });
+      loadSubmissions();
+    } catch (err) {
+      setResult({ verdict: 'RE', message: String(err) });
+    } finally {
+      setStatus('');
+      setBusy(false);
+    }
+  }
+
+  if (!problem) return <p className="muted">Loading...</p>;
+
+  return (
+    <div className="problem-layout">
+      <section className="statement">
+        <h1>{problem.title}</h1>
+        <p className="muted">
+          {problem.difficulty} · {problem.tags?.join(', ')}
+        </p>
+        <div dangerouslySetInnerHTML={{ __html: marked.parse(problem.statement) }} />
+      </section>
+
+      <section className="workspace">
+        <div className="toolbar">
+          <select
+            value={language.id}
+            onChange={(e) => setLanguage(LANGUAGES.find((l) => l.id === e.target.value))}
+          >
+            {LANGUAGES.map((l) => (
+              <option key={l.id} value={l.id} disabled={!l.enabled}>
+                {l.label}
+              </option>
+            ))}
+          </select>
+          <div className="spacer" />
+          <button className="ghost" disabled title="Not implemented yet">
+            Run
+          </button>
+          <button onClick={submit} disabled={busy}>
+            {busy ? 'Judging...' : 'Submit'}
+          </button>
+        </div>
+
+        <CodeEditor language={language.monaco} value={code} onChange={setCode} />
+
+        {status && <p className="muted">{status}</p>}
+        {result && (
+          <div className="verdict">
+            <strong>{VERDICT_LABELS[result.verdict] || result.verdict}</strong>
+            {result.total ? (
+              <span className="muted">
+                {' '}
+                · {result.passed}/{result.total} tests passed
+              </span>
+            ) : null}
+            {result.message && <pre>{result.message}</pre>}
+          </div>
+        )}
+
+        <h3>Your submissions</h3>
+        {submissions.length === 0 ? (
+          <p className="muted">No submissions yet.</p>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Language</th>
+                <th>Verdict</th>
+                <th>Tests</th>
+              </tr>
+            </thead>
+            <tbody>
+              {submissions.map((s) => (
+                <tr key={s.id}>
+                  <td>{new Date(s.createdAt).toLocaleTimeString()}</td>
+                  <td>{s.language}</td>
+                  <td>{s.verdict}</td>
+                  <td>
+                    {s.passed}/{s.total}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+    </div>
+  );
+}

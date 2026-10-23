@@ -1,0 +1,33 @@
+// A tiny JSON-file "database". Good enough for one day of hacking,
+// and it means nobody has to install a real database.
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DATA_DIR = path.join(__dirname, 'data');
+const DB_FILE = path.join(DATA_DIR, 'db.json');
+
+function load() {
+  if (!fs.existsSync(DB_FILE)) return { submissions: [] };
+  return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+}
+
+function save(db) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+}
+
+export function addSubmission(submission) {
+  const db = load();
+  const row = { id: db.submissions.length + 1, createdAt: new Date().toISOString(), ...submission };
+  db.submissions.push(row);
+  save(db);
+  return row;
+}
+
+export function listSubmissions({ slug, username } = {}) {
+  return load().submissions.filter(
+    (s) => (!slug || s.slug === slug) && (!username || s.username === username)
+  );
+}

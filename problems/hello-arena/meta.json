@@ -1,0 +1,7 @@
+{
+  "title": "Hello, Arena!",
+  "difficulty": "Easy",
+  "tags": ["warm-up"],
+  "order": 1,
+  "timeLimitMs": 2000
+}

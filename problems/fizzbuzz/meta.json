@@ -1,0 +1,7 @@
+{
+  "title": "FizzBuzz",
+  "difficulty": "Easy",
+  "tags": ["loops"],
+  "order": 3,
+  "timeLimitMs": 2000
+}
