@@ -1,6 +1,6 @@
 # Contributing to CodeArena
 
-Welcome, Hack Day participant! Here's how to go from zero to a judged pull request.
+Welcome, HackDay x Hacktoberfest 2026 participant! (Not registered yet? See [The event](README.md#the-event).) Here's how to go from zero to a judged pull request.
 
 ## How Hack Day works
 
