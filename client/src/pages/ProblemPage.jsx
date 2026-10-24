@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { marked } from 'marked';
 import { api } from '../api.js';
 import { judge } from '../judge/runner.js';
 import { VERDICT_LABELS } from '../judge/verdict.js';
 import { LANGUAGES } from '../languages.js';
-import { getUsername } from '../username.js';
+import { useAuth } from '../auth.jsx';
 import CodeEditor from '../components/CodeEditor.jsx';
 
 export default function ProblemPage() {
   const { slug } = useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [problem, setProblem] = useState(null);
   const [language, setLanguage] = useState(LANGUAGES[0]);
   const [code, setCode] = useState(LANGUAGES[0].template);
@@ -23,19 +25,21 @@ export default function ProblemPage() {
     setResult(null);
     setCode(language.template);
     api.problem(slug).then(setProblem);
-    loadSubmissions();
   }, [slug]);
 
+  useEffect(() => {
+    loadSubmissions();
+  }, [slug, user]);
+
   function loadSubmissions() {
-    const username = getUsername();
-    if (!username) return setSubmissions([]);
-    api.submissions(slug, username).then(setSubmissions);
+    if (!user) return setSubmissions([]);
+    api.submissions(slug, user.username).then(setSubmissions);
   }
 
   async function submit() {
-    const username = getUsername();
-    if (!username) {
-      alert('Enter your team name in the top bar first.');
+    // Like LeetCode: anyone can read and write code, but submitting needs an account.
+    if (!user) {
+      navigate(`/login?next=/problems/${slug}`);
       return;
     }
     setBusy(true);
@@ -43,7 +47,7 @@ export default function ProblemPage() {
     try {
       const res = await judge(code, problem, setStatus);
       setResult(res);
-      await api.submit({ username, slug, language: language.id, code, ...res });
+      await api.submit({ username: user.username, slug, language: language.id, code, ...res });
       loadSubmissions();
     } catch (err) {
       setResult({ verdict: 'RE', message: String(err) });
@@ -82,7 +86,7 @@ export default function ProblemPage() {
             Run
           </button>
           <button onClick={submit} disabled={busy}>
-            {busy ? 'Judging...' : 'Submit'}
+            {busy ? 'Judging...' : user ? 'Submit' : 'Log in to submit'}
           </button>
         </div>
 
@@ -103,7 +107,11 @@ export default function ProblemPage() {
         )}
 
         <h3>Your submissions</h3>
-        {submissions.length === 0 ? (
+        {!user ? (
+          <p className="muted">
+            <Link to={`/login?next=/problems/${slug}`}>Log in</Link> to submit and see your submissions.
+          </p>
+        ) : submissions.length === 0 ? (
           <p className="muted">No submissions yet.</p>
         ) : (
           <table className="table">

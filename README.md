@@ -13,14 +13,17 @@ Your code never runs on a server. It runs **inside your own browser**:
 - Python runs through [Pyodide](https://pyodide.org/), which is Python compiled to WebAssembly.
 - The code runs in a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API), so an infinite loop can't freeze the page. When the time limit runs out, the page kills the worker.
 - The page compares your output with the expected output and works out the verdict.
-- The small Express server only stores submissions and serves problems and the leaderboard.
+- The small Express server stores team accounts and submissions, and serves problems and the leaderboard.
+- Like LeetCode, anyone can read problems and write code, but you need a team account to **submit**.
 
 ```
 client/            React + Vite frontend
   public/python-worker.js   runs Python in a Web Worker
   src/judge/                runner, output comparison, verdicts
-  src/pages/                Problem list, problem page, leaderboard
+  src/pages/                Problem list, problem page, leaderboard, log in / sign up
+  src/auth.jsx              who is logged in (React context)
 server/            Express API (stores data in server/data/db.json)
+  auth.js                   sign up, log in, log out, sessions
 problems/          one folder per problem
 ```
 
@@ -35,7 +38,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173, type a team name in the top bar, and solve **Hello, Arena!**
+Open http://localhost:5173, click **Sign up** to create a team account, and solve **Hello, Arena!**
 
 - The frontend runs on port 5173 and the API on port 4000.
 - The first submission takes a few seconds while Python loads in your browser.

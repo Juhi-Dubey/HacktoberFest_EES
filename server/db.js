@@ -9,8 +9,8 @@ const DATA_DIR = path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 
 function load() {
-  if (!fs.existsSync(DB_FILE)) return { submissions: [] };
-  return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+  if (!fs.existsSync(DB_FILE)) return { users: [], submissions: [] };
+  return { users: [], submissions: [], ...JSON.parse(fs.readFileSync(DB_FILE, 'utf8')) };
 }
 
 function save(db) {
@@ -30,4 +30,16 @@ export function listSubmissions({ slug, username } = {}) {
   return load().submissions.filter(
     (s) => (!slug || s.slug === slug) && (!username || s.username === username)
   );
+}
+
+export function addUser({ username, password }) {
+  const db = load();
+  const user = { id: db.users.length + 1, createdAt: new Date().toISOString(), username, password };
+  db.users.push(user);
+  save(db);
+  return user;
+}
+
+export function findUser(username) {
+  return load().users.find((u) => u.username === username);
 }
