@@ -86,6 +86,44 @@ button:disabled {
   cursor: not-allowed;
 }
 
+a.button {
+  background: var(--accent);
+  color: white;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.team-name {
+  font-weight: 600;
+}
+
+.auth-card {
+  max-width: 380px;
+  margin: 40px auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.auth-card h1 {
+  margin-top: 0;
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
 button.ghost {
   background: transparent;
   color: var(--text);
