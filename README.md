@@ -42,7 +42,7 @@ Open http://localhost:5173, type a team name in the top bar, and solve **Hello, 
 
 ## Contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before you start. It explains how to claim an issue, how to add a problem and what a good PR looks like.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before you start. It explains the tags and points, how PRs are judged, how to add a problem and what a good PR looks like. PRs are not merged during the event; each one is judged on its own.
 
 ## License
 
