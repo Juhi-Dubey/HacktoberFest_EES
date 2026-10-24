@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "description": "A tiny online judge built for Hacktoberfest Hack Day, NIT Jamshedpur",
+  "engines": {
+    "node": ">=20"
+  },
   "workspaces": [
     "client",
     "server"
@@ -10,7 +13,8 @@
   "scripts": {
     "dev": "concurrently -n server,client -c blue,magenta \"npm run dev -w server\" \"npm run dev -w client\"",
     "build": "npm run build -w client",
-    "start": "npm start -w server"
+    "start": "npm start -w server",
+    "test": "node -e \"console.log('No tests yet. See the unit tests issue.')\""
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

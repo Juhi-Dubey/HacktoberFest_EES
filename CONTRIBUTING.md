@@ -1,14 +1,26 @@
 # Contributing to CodeArena
 
-Welcome, Hack Day participant! Here's how to go from zero to a merged pull request.
+Welcome, Hack Day participant! Here's how to go from zero to a judged pull request.
+
+## How Hack Day works
+
+- Every issue has exactly one tag, and the tag sets its points:
+
+| Tag | Points | Typical time |
+| --- | --- | --- |
+| `documentation` | 5 | under 1 hour |
+| `beginner` | 10 | 30 minutes to 2 hours |
+| `hard` | 20 | 3 to 6 hours |
+
+- **PRs are not merged during the event.** The repo stays exactly as it is, so every team starts from the same code. Judges score each PR on its own at the end.
+- **Several teams can work on the same issue.** You don't need to claim anything; just pick an issue and start.
+- Every issue stands alone, so your PR must work by itself and must not depend on anyone else's PR.
+- Only PRs opened before the cut-off time announced on the day count.
 
 ## 1. Pick an issue
 
-- Browse the [Issues](../../issues). Every issue has a difficulty label: `easy` (10 points), `medium` (20 points) or `hard` (30 points).
-- New to open source? Start with an issue labelled `good first issue`.
-- Comment **"claim"** on the issue so others know you're on it. A team can hold **at most 2** issues at once.
-- If you don't open a PR within **2 hours**, the issue goes back up for grabs.
-- Some issues say "blocked by #N". Wait until that one is merged.
+- Browse the [Issues](../../issues). New to open source? Start with `documentation` or `beginner` (also labelled `good first issue`).
+- Read the whole issue: it says what's wrong, how to see it, where to look and when it counts as done.
 
 ## 2. Make your change
 
@@ -25,11 +37,19 @@ Keep the change focused on the issue. A small PR that does one thing well beats 
 
 ## 3. Open a pull request
 
-- Title: what you changed, e.g. `Fix dark mode so it covers the whole page`
-- In the description, write `Closes #<issue number>`, explain what you changed, and add a screenshot or GIF if the change is visible.
-- Make sure `npm run build` still works.
+- Title: your team name and what you changed, e.g. `[Team Ohm] Fix dark mode so it covers the whole page`
+- In the description, write `Closes #<issue number>`, explain what you changed and how you tested it, and add a screenshot or GIF if the change is visible.
+- One issue per PR. Make sure `npm run build` still works.
 
-Judges reward PRs that are **clear, working, and well explained**, not just big ones.
+## How PRs are judged
+
+Each PR earns its tag's points, scaled by quality:
+
+| What judges check | Weight |
+| --- | --- |
+| It works: the issue's "Done when" is met and the app still runs | 50% |
+| Code quality: focused, readable, no unrelated changes | 30% |
+| PR description: clear explanation, `Closes #N`, screenshot | 20% |
 
 ## Adding a new problem
 
