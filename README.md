@@ -1,6 +1,20 @@
+![HackDay x Hacktoberfest 2026, NIT Jamshedpur](docs/banner.jpg)
+
 # CodeArena
 
-A tiny online judge, like a mini LeetCode, built for **Hacktoberfest Hack Day 2026 at NIT Jamshedpur**, organised by the Electrical Engineering Society.
+A tiny online judge, like a mini LeetCode, built for **HackDay x Hacktoberfest 2026 at NIT Jamshedpur**, organised by the Electrical Engineering Society.
+
+## The event
+
+- **When:** Saturday, 31 October 2026, 9:30 AM to 3:30 PM
+- **Where:** NIT Jamshedpur
+- **Teams:** 3 members (at least one girl in every team)
+- **Prizes:** T-shirts, Arduino boards and goodies for top performers, and a laptop sticker pack for every participant
+
+**Register in both places to take part:**
+
+1. [NIT Jamshedpur registration form](https://forms.gle/sGuPKwaUhMbXUrnbA)
+2. [Hacktoberfest Hack Day registration on MLH](https://events.mlh.com/events/14996-hacktoberfest-hack-day-jamshedpur-x-nit-jamshedpur)
 
 Pick a problem, write a solution, hit **Submit**, and get a verdict: Accepted, Wrong Answer, Time Limit Exceeded, Runtime Error or Compilation Error.
 
