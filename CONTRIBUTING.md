@@ -8,7 +8,7 @@ Welcome, HackDay x Hacktoberfest 2026 participant! (Not registered yet? See [The
 
 | Tag | Points | Typical time |
 | --- | --- | --- |
-| `documentation` | 5 | under 1 hour |
+| `documentation` | 1 | under 1 hour |
 | `beginner` | 10 | 30 minutes to 2 hours |
 | `hard` | 20 | 3 to 6 hours |
 
