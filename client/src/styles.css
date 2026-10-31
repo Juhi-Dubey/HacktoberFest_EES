@@ -89,10 +89,18 @@ a {
   flex: 1;
 }
 
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
+  width: 100%;
+  flex: 1;
 }
 
 button {
@@ -301,4 +309,17 @@ select {
   gap: 8px;
   margin: 8px 0 16px;
   font-size: 14px;
+}
+
+.footer {
+  text-align: center;
+  padding: 20px 24px;
+  font-size: 14px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.footer p {
+  margin: 0;
 }
