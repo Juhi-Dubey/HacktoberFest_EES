@@ -1,16 +1,39 @@
-// A tiny JSON-file "database". Good enough for one day of hacking,
-// and it means nobody has to install a real database.
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 
+const HASH_REGEX = /^[0-9a-f]{32}:[0-9a-f]{128}$/i;
+
+function hashSync(password) {
+  const salt = crypto.randomBytes(16).toString('hex');
+  const hash = crypto.scryptSync(password, salt, 64).toString('hex');
+  return `${salt}:${hash}`;
+}
+
+function migratePasswords(db) {
+  let changed = false;
+  for (const user of db.users) {
+    if (user.password && !HASH_REGEX.test(user.password)) {
+      user.password = hashSync(user.password);
+      changed = true;
+    }
+  }
+  if (changed) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+  }
+  return db;
+}
+
 function load() {
   if (!fs.existsSync(DB_FILE)) return { users: [], submissions: [] };
-  return { users: [], submissions: [], ...JSON.parse(fs.readFileSync(DB_FILE, 'utf8')) };
+  const raw = { users: [], submissions: [], ...JSON.parse(fs.readFileSync(DB_FILE, 'utf8')) };
+  return migratePasswords(raw);
 }
 
 function save(db) {
@@ -34,7 +57,8 @@ export function listSubmissions({ slug, username } = {}) {
 
 export function addUser({ username, password }) {
   const db = load();
-  const user = { id: db.users.length + 1, createdAt: new Date().toISOString(), username, password };
+  const storedPassword = (password && !HASH_REGEX.test(password)) ? hashSync(password) : password;
+  const user = { id: db.users.length + 1, createdAt: new Date().toISOString(), username, password: storedPassword };
   db.users.push(user);
   save(db);
   return user;

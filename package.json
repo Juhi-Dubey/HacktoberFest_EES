@@ -14,12 +14,15 @@
     "dev": "concurrently -n server,client -c blue,magenta \"npm run dev -w server\" \"npm run dev -w client\"",
     "build": "npm run build -w client",
     "start": "npm start -w server",
-    "test": "node -e \"console.log('No tests yet. See the unit tests issue.')\""
+    "test": "node --test server/auth.test.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
   },
   "overrides": {
     "dompurify": "^3.4.17"
+  },
+  "dependencies": {
+    "nodemon": "^3.1.14"
   }
 }
