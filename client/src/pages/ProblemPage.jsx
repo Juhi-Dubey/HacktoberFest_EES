@@ -63,9 +63,14 @@ export default function ProblemPage() {
     <div className="problem-layout">
       <section className="statement">
         <h1>{problem.title}</h1>
-        <p className="muted">
-          {problem.difficulty} · {problem.tags?.join(', ')}
-        </p>
+        <div className="problem-meta">
+          <span className={`badge badge-${problem.difficulty?.toLowerCase()}`}>
+            {problem.difficulty}
+          </span>
+          {problem.tags?.length > 0 && (
+            <span className="muted">· {problem.tags.join(', ')}</span>
+          )}
+        </div>
         <div dangerouslySetInnerHTML={{ __html: marked.parse(problem.statement) }} />
       </section>
 
