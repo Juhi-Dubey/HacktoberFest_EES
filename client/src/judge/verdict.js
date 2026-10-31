@@ -6,6 +6,7 @@
 //   CE  Compilation Error (for Python: a SyntaxError)
 export function toVerdict(result) {
   if (result.type === 'ok') return result.passed ? 'AC' : 'WA';
+  if (result.type === 'timeout') return 'TLE';
   if (result.type === 'syntax') return 'CE';
   // anything else means the program crashed
   return 'RE';

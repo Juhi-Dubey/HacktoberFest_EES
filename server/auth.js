@@ -167,18 +167,34 @@ export function _resetRateLimits() {
   failedByIp.clear();
 }
 
+export const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9\s]).{8,}$/;
+
 export function authRoutes(app) {
   app.post('/api/auth/signup', async (req, res) => {
     const username = String(req.body.username || '').trim();
+    const email = String(req.body.email || '').trim().toLowerCase();
     const password = String(req.body.password || '');
     if (!username || !password) {
       return res.status(400).json({ error: 'Team name and password are required' });
     }
+    if (email && !EMAIL_REGEX.test(email)) {
+      return res.status(400).json({ error: 'Please enter a valid email address' });
+    }
+    if (email && !PASSWORD_REGEX.test(password)) {
+      return res.status(400).json({
+        error:
+          'Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character',
+      });
+    }
     if (findUser(username)) {
       return res.status(409).json({ error: 'That team name is taken' });
     }
+    if (email && findUser(email)) {
+      return res.status(409).json({ error: 'That email is already registered' });
+    }
     const hashedPassword = await hashPassword(password);
-    addUser({ username, password: hashedPassword });
+    addUser({ username, email: email || undefined, password: hashedPassword });
     startSession(res, username);
     res.status(201).json({ username });
   });

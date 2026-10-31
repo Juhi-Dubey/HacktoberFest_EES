@@ -95,14 +95,53 @@ export default function ProblemPage() {
         {status && <p className="muted">{status}</p>}
         {result && (
           <div className="verdict">
-            <strong>{VERDICT_LABELS[result.verdict] || result.verdict}</strong>
-            {result.total ? (
-              <span className="muted">
-                {' '}
-                · {result.passed}/{result.total} tests passed
-              </span>
-            ) : null}
-            {result.message && <pre>{result.message}</pre>}
+            <div className="verdict-summary">
+              <strong>{VERDICT_LABELS[result.verdict] || result.verdict}</strong>
+              {result.total ? (
+                <span className="muted">
+                  {' '}
+                  · {result.passed}/{result.total} tests passed
+                </span>
+              ) : null}
+            </div>
+
+            {result.tests && result.tests.length > 0 && (
+              <div className="test-results-row">
+                {result.tests.map((t) => (
+                  <div
+                    key={t.index}
+                    className={`test-box test-box-${t.verdict.toLowerCase()}`}
+                    title={`Test ${t.index}: ${VERDICT_LABELS[t.verdict] || t.verdict}`}
+                  >
+                    {t.verdict === 'AC' ? '✓' : t.verdict === 'TLE' ? '⏱' : '✕'}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {result.failingTest && (
+              <div className="test-diff-card">
+                <div className="test-diff-header">
+                  <strong>First failing test: Test {result.failingTest.index} ({VERDICT_LABELS[result.failingTest.verdict] || result.failingTest.verdict})</strong>
+                </div>
+                <div className="test-diff-columns">
+                  <div className="diff-col">
+                    <span className="diff-col-title">Input</span>
+                    <pre className="diff-code">{result.failingTest.input || '(empty)'}</pre>
+                  </div>
+                  <div className="diff-col">
+                    <span className="diff-col-title">Expected output</span>
+                    <pre className="diff-code">{result.failingTest.expected || '(empty)'}</pre>
+                  </div>
+                  <div className="diff-col">
+                    <span className="diff-col-title">Your output</span>
+                    <pre className="diff-code">{result.failingTest.actual || '(no output)'}</pre>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {result.message && !result.failingTest && <pre>{result.message}</pre>}
           </div>
         )}
 

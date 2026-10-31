@@ -55,15 +55,25 @@ export function listSubmissions({ slug, username } = {}) {
   );
 }
 
-export function addUser({ username, password }) {
+export function addUser({ username, email, password }) {
   const db = load();
   const storedPassword = (password && !HASH_REGEX.test(password)) ? hashSync(password) : password;
-  const user = { id: db.users.length + 1, createdAt: new Date().toISOString(), username, password: storedPassword };
+  const user = {
+    id: db.users.length + 1,
+    createdAt: new Date().toISOString(),
+    username,
+    ...(email ? { email } : {}),
+    password: storedPassword,
+  };
   db.users.push(user);
   save(db);
   return user;
 }
 
-export function findUser(username) {
-  return load().users.find((u) => u.username === username);
+export function findUser(identifier) {
+  if (!identifier) return null;
+  const norm = String(identifier).trim().toLowerCase();
+  return load().users.find(
+    (u) => u.username.toLowerCase() === norm || (u.email && u.email.toLowerCase() === norm)
+  );
 }

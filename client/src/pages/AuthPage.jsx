@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth.jsx';
 
@@ -42,12 +42,18 @@ function EyeOffIcon() {
   );
 }
 
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9\s]).{8,}$/;
+
 // One page for both "Log in" and "Sign up"; mode decides which.
 export default function AuthPage({ mode }) {
   const isSignup = mode === 'signup';
   const { login, signup } = useAuth();
   const navigate = useNavigate();
+  const emailInputRef = useRef(null);
+  const passwordInputRef = useRef(null);
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -55,15 +61,59 @@ export default function AuthPage({ mode }) {
 
   useEffect(() => {
     setShowPassword(false);
+    setError('');
   }, [mode]);
+
+  function handleTeamNameKeyDown(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (isSignup) {
+        emailInputRef.current?.focus();
+      } else {
+        passwordInputRef.current?.focus();
+      }
+    }
+  }
+
+  function handleEmailKeyDown(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      passwordInputRef.current?.focus();
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername) {
+      setError('Team name is required');
+      return;
+    }
+
+    if (isSignup) {
+      const trimmedEmail = email.trim();
+      if (!trimmedEmail) {
+        setError('Email address is required');
+        return;
+      }
+      if (!EMAIL_REGEX.test(trimmedEmail)) {
+        setError('Please enter a valid email address');
+        return;
+      }
+      if (!PASSWORD_REGEX.test(password)) {
+        setError(
+          'Password must be at least 8 characters long and contain uppercase, lowercase, a digit, and a special character'
+        );
+        return;
+      }
+    }
+
     setBusy(true);
     try {
-      if (isSignup) await signup(username, password);
-      else await login(username, password);
+      if (isSignup) await signup(trimmedUsername, password, email.trim());
+      else await login(trimmedUsername, password);
       navigate('/');
     } catch (err) {
       setError(err.message);
@@ -79,12 +129,37 @@ export default function AuthPage({ mode }) {
       <form onSubmit={handleSubmit}>
         <label>
           Team name
-          <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" />
+          <input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            onKeyDown={handleTeamNameKeyDown}
+            autoComplete="username"
+          />
         </label>
+        {isSignup && (
+          <label>
+            Email
+            <input
+              ref={emailInputRef}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={handleEmailKeyDown}
+              autoComplete="email"
+              placeholder="team@example.com"
+            />
+          </label>
+        )}
         <label>
           Password
+          {isSignup && (
+            <span className="muted" style={{ fontSize: '12px', fontWeight: 'normal' }}>
+              Min 8 chars with uppercase, lowercase, digit & special char
+            </span>
+          )}
           <div className="password-field">
             <input
+              ref={passwordInputRef}
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}

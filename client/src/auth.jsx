@@ -21,8 +21,8 @@ export function AuthProvider({ children }) {
     setUser(await api.login({ username, password }));
   }
 
-  async function signup(username, password) {
-    setUser(await api.signup({ username, password }));
+  async function signup(username, password, email) {
+    setUser(await api.signup({ username, password, email }));
   }
 
   async function logout() {

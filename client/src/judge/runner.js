@@ -32,32 +32,93 @@ function runTest(worker, code, input, timeLimitMs) {
 /**
  * Judges a submission against a problem's tests.
  * onStatus is called with short status messages for the UI.
- * Returns { verdict, passed, total, message }.
+ * Returns { verdict, passed, total, message, tests, failingTest }.
  */
 export async function judge(code, problem, onStatus = () => {}) {
   onStatus('Starting Python...');
-  const { worker, ready } = startWorker();
-  await ready;
+  let currentWorker = null;
 
-  const timeLimitMs = problem.timeLimitMs ?? problem.timeLimit ?? DEFAULT_TIME_LIMIT_MS;
-  const tests = problem.tests.slice(0, 1);
-  let passed = 0;
-
-  for (let i = 0; i < tests.length; i++) {
-    onStatus(`Running test ${i + 1}...`);
-    const result = await runTest(worker, code, tests[i].input, timeLimitMs);
-
-    if (result.type === 'ok') {
-      result.passed = outputsMatch(result.stdout, tests[i].output);
-    }
-    const verdict = toVerdict(result);
-    if (verdict !== 'AC') {
-      worker.terminate();
-      return { verdict, passed, total: tests.length, message: result.message || '' };
-    }
-    passed++;
+  async function getWorker() {
+    if (currentWorker) return currentWorker;
+    const { worker, ready } = startWorker();
+    await ready;
+    currentWorker = worker;
+    return currentWorker;
   }
 
-  worker.terminate();
-  return { verdict: 'AC', passed, total: tests.length, message: '' };
+  await getWorker();
+
+  const timeLimitMs = problem.timeLimitMs ?? problem.timeLimit ?? DEFAULT_TIME_LIMIT_MS;
+  const tests = problem.tests || [];
+  let passed = 0;
+  const testResults = [];
+
+  for (let i = 0; i < tests.length; i++) {
+    onStatus(`Running test ${i + 1}/${tests.length}...`);
+    const worker = await getWorker();
+    const test = tests[i];
+    const result = await runTest(worker, code, test.input, timeLimitMs);
+
+    if (result.type === 'timeout') {
+      currentWorker = null; // Worker was terminated inside runTest on timeout
+    }
+
+    if (result.type === 'ok') {
+      result.passed = outputsMatch(result.stdout, test.output);
+    }
+
+    const verdict = toVerdict(result);
+    const isPassed = verdict === 'AC';
+    if (isPassed) passed++;
+
+    const actual =
+      result.type === 'timeout'
+        ? '(Time Limit Exceeded)'
+        : result.type === 'syntax' || result.type === 'runtime'
+        ? result.message || ''
+        : result.stdout ?? '';
+
+    testResults.push({
+      index: i + 1,
+      input: test.input,
+      expected: test.output,
+      actual,
+      passed: isPassed,
+      verdict,
+      message: result.message || '',
+    });
+
+    // If syntax error, subsequent tests will also fail with syntax error
+    if (verdict === 'CE') {
+      for (let j = i + 1; j < tests.length; j++) {
+        testResults.push({
+          index: j + 1,
+          input: tests[j].input,
+          expected: tests[j].output,
+          actual: result.message || '',
+          passed: false,
+          verdict: 'CE',
+          message: result.message || '',
+        });
+      }
+      break;
+    }
+  }
+
+  if (currentWorker) {
+    currentWorker.terminate();
+  }
+
+  const failingTest = testResults.find((t) => !t.passed) || null;
+  const overallVerdict = failingTest ? failingTest.verdict : 'AC';
+  const message = failingTest?.message || '';
+
+  return {
+    verdict: overallVerdict,
+    passed,
+    total: tests.length,
+    message,
+    tests: testResults,
+    failingTest,
+  };
 }
