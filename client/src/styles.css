@@ -124,6 +124,45 @@ a.button {
   font-size: 14px;
 }
 
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 38px;
+}
+
+button.password-toggle {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+button.password-toggle:hover {
+  background: transparent;
+  color: var(--text);
+}
+
+button.password-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
 button.ghost {
   background: transparent;
   color: var(--text);
