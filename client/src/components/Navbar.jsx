@@ -1,13 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../auth.jsx';
 
 export default function Navbar() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved !== null) {
+      return saved === 'dark';
+    }
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+  });
   const { user, checking, logout } = useAuth();
 
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+  }, [dark]);
+
   return (
-    <nav className={`navbar ${dark ? 'dark' : ''}`}>
+    <nav className="navbar">
       <Link to="/" className="brand">
         Code<span>Arena</span>
       </Link>
@@ -29,7 +40,7 @@ export default function Navbar() {
           </Link>
         </>
       )}
-      <button className="ghost" onClick={() => setDark(!dark)} title="Toggle dark mode">
+      <button className="ghost" onClick={() => setDark((prev) => !prev)} title="Toggle dark mode" aria-label="Toggle dark mode">
         {dark ? '☀️' : '🌙'}
       </button>
     </nav>

@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   --bg: #f7f7f9;
   --surface: #ffffff;
   --text: #1d1d24;
@@ -19,7 +20,9 @@
   --badge-hard-border: #fecaca;
 }
 
+:root.dark,
 .dark {
+  color-scheme: dark;
   --bg: #121218;
   --surface: #1c1c25;
   --text: #ececf1;
